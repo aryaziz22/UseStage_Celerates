@@ -1,84 +1,52 @@
-import { useState } from 'react';
-import { Card, Form, Row, Col, Button } from 'react-bootstrap';
+import React, { useState } from 'react';
+import { Form, Button } from 'react-bootstrap';
 
-const NoteForm = ({ onAddIdea }) => {
-  const [newIdea, setNewIdea] = useState({
-    idea: "",
-    category: "career" 
-  });
-
-  const categoryOptions = [
-    { value: "career", label: "Karier" },
-    { value: "motivation", label: "Motivasi" },
-    { value: "lifestyle", label: "Gaya Hidup" },
-    { value: "finance", label: "Keuangan" },
-    { value: "other", label: "Lainnya" }
-  ];
+const NoteForm = ({ onAddIdea, onCancel }) => {
+  const [idea, setIdea] = useState('');
+  const [category, setCategory] = useState('career');
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    if (newIdea.idea.trim() === "") return;
-
-    onAddIdea(newIdea);
-    setNewIdea({
-      idea: "",
-      category: "career" 
-    });
+    if (!idea.trim()) {
+      console.warn("Ide tidak boleh kosong! Attempted to submit empty idea.");
+      return;
+    }
+    onAddIdea({ idea, category });
+    setIdea('');
+    setCategory('career');
   };
 
   return (
-    <Card className="shadow-sm mb-4">
-      <Card.Body>
-        <Card.Title className="mb-3">
-          <i className="bi bi-plus-circle me-2"></i>
-          Tambah Catatan Baru
-        </Card.Title>
-
-        <Form onSubmit={handleSubmit}>
-          <Form.Group className="mb-3">
-            <Form.Control
-              as="textarea"
-              placeholder="Tulis ide baru..."
-              value={newIdea.idea}
-              onChange={(e) =>
-                setNewIdea({ ...newIdea, idea: e.target.value })
-              }
-              rows={2}
-            />
-          </Form.Group>
-
-          <Row>
-            <Col md={12} className="mb-3">
-              <Form.Group>
-                <Form.Label>
-                  <i className="bi bi-tag me-1"></i>
-                  Kategori
-                </Form.Label>
-                <Form.Select
-                  value={newIdea.category}
-                  onChange={(e) =>
-                    setNewIdea({ ...newIdea, category: e.target.value })
-                  }
-                >
-                  {categoryOptions.map((option) => (
-                    <option key={option.value} value={option.value}>
-                      {option.label}
-                    </option>
-                  ))}
-                </Form.Select>
-              </Form.Group>
-            </Col>
-          </Row>
-
-          <div className="text-end">
-            <Button type="submit" variant="primary">
-              <i className="bi bi-plus-lg me-1"></i>
-              Tambah Ide
-            </Button>
-          </div>
-        </Form>
-      </Card.Body>
-    </Card>
+    <Form onSubmit={handleSubmit}>
+      <Form.Group className="mb-3" controlId="formNewIdeaText">
+        <Form.Label>Ide Anda</Form.Label>
+        <Form.Control
+          as="textarea"
+          rows={3}
+          value={idea}
+          onChange={(e) => setIdea(e.target.value)}
+          placeholder="Tuliskan ide cemerlang Anda di sini..."
+          required
+        />
+      </Form.Group>
+      <Form.Group className="mb-3" controlId="formNewIdeaCategory">
+        <Form.Label>Kategori</Form.Label>
+        <Form.Select value={category} onChange={(e) => setCategory(e.target.value)} aria-label="Pilih kategori ide">
+          <option value="career">Karir</option>
+          <option value="motivation">Motivasi</option>
+          <option value="lifestyle">Gaya Hidup</option>
+          <option value="finance">Keuangan</option>
+        </Form.Select>
+      </Form.Group>
+      <div className="d-flex justify-content-end">
+        <Button variant="outline-secondary" onClick={onCancel} className="me-2">
+          Batal
+        </Button>
+        <Button variant="primary" type="submit">
+          <i className="bi bi-save me-2"></i>Simpan Ide
+        </Button>
+      </div>
+    </Form>
   );
 };
 
